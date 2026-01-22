@@ -14,18 +14,27 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
-    // creating new user
+   // creating new user
     public User createUser(String username, String email, String password) {
         User user = new User(username, email, password);
         return userRepository.save(user);
     }
 
-    // authenticating the user
-    public boolean authenticate(String email, String password) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        return userOpt
-                .map(user -> user.getPassword().equals(password))
-                .orElse(false);
+  // authenticating the user
+    public boolean authenticate(String username, String password) {
+        Optional<User> userOpt = userRepository.findByEmail(username); // you could switch to findByUsername if needed
+        return userOpt.map(user -> user.getPassword().equals(password)).orElse(false);
+    }
+
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
     }
 }
+
+
+
+
+
+
+
+
