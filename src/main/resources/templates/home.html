@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Note App</title>
+    <style>
+        html, body {
+            height: 100%; margin: 0; font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #2b2b2b; color: #f1f1f1;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .dashboard-card {
+            background-color: #333; padding: 40px; border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 100%; max-width: 500px;
+            text-align: center;
+        }
+        h1 { margin-bottom: 10px; color: #fff; }
+        p { color: #aaa; margin-bottom: 30px; }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .btn {
+            text-decoration: none; padding: 15px; border-radius: 8px;
+            font-weight: bold; transition: 0.3s; color: white;
+            display: block; text-align: center;
+        }
+        .btn-primary { background-color: #4a4a4a; border: 1px solid #555; }
+        .btn-primary:hover { background-color: #606060; }
+        
+        .btn-accent { background-color: #3d5afe; } 
+        .btn-accent:hover { background-color: #536dfe; }
+
+        .logout-link {
+            margin-top: 25px; display: inline-block;
+            color: #ff6b6b; text-decoration: none; font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-card">
+    <h1>Welcome Back!</h1>
+    <p>What would you like to do with your notes today?</p>
+
+    <div class="menu-grid">
+        <a th:href="@{/notes/new}" class="btn btn-accent"> Create New Note</a>
+        <a th:href="@{/notes}" class="btn btn-primary"> See Your Notes</a>
+    </div>
+
+    <form th:action="@{/logout}" method="post" style="display: inline;">
+        <button type="submit" class="logout-link" style="background:none; border:none; cursor:pointer;">
+            Logout Securely
+        </button>
+    </form>
+</div>
+
+</body>
+</html>

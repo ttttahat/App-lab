@@ -1,18 +1,18 @@
 package taha.labs.project.controller;
 
-import taha.labs.project.model.User;
 import taha.labs.project.model.dto.CreateUserRequest;
-import taha.labs.project.model.dto.LoginRequest;
 import taha.labs.project.service.UserService;
 
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication; 
+import org.springframework.security.core.context.SecurityContextHolder; 
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Optional;
-
-@RestController
+@Controller
 public class UserController {
 
     private final UserService userService;
@@ -21,48 +21,46 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
+            return "redirect:/user/home";
+        }
+
+        if (!model.containsAttribute("user")) {
+            model.addAttribute("user", new CreateUserRequest());
+        }
+        return "register";
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(
-            @RequestHeader("Content-Type") String ct,
-            @Valid @RequestBody CreateUserRequest req
+    public String registerUser(
+            @Valid @ModelAttribute("user") CreateUserRequest req,
+            BindingResult result, 
+            RedirectAttributes redirectAttrs,
+            Model model
     ) {
-        if(!"application/json".equalsIgnoreCase(ct)) {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
-        }
-        User user = userService.createUser(
-                req.getUsername(),
-                req.getEmail(),
-                req.getPassword()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-    @PostMapping("/login")
-    public ResponseEntity<?> login(
-            @RequestHeader("Content-Type") String ct,
-            @Valid @RequestBody LoginRequest req
-    ) {
-        if(!"application/json".equalsIgnoreCase(ct)) {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
-        }
-        boolean ok = userService.authenticate(
-                req.getUsername(),
-                req.getPassword()
-        );
-
-        if(ok) return ResponseEntity.ok().build();
-        else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-    @GetMapping("/user/{userid}")
-    public ResponseEntity<?> getUser(
-            @RequestHeader("Content-Type") String ct,
-            @PathVariable Long userid
-    ) {
-        if(!"application/json".equalsIgnoreCase(ct)) {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+        if (result.hasErrors()) {
+            return "register";
         }
 
-        Optional<User> userOpt = userService.getUserById(userid);
-        return userOpt.map(user -> ResponseEntity.ok().body(user))
-                      .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        try {
+            userService.createUser(
+                    req.getUsername(),
+                    req.getEmail(),
+                    req.getPassword()
+            );
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("registrationError", ex.getMessage());
+            return "register";
+        }
+
+        redirectAttrs.addFlashAttribute(
+                "successMessage",
+                "Registered successfully! Please login."
+        );
+
+        return "redirect:/login";
     }
 }

@@ -1,4 +1,4 @@
-package taha.labs.project.model;
+package taha.labs.project.model.dto;
 
 import jakarta.persistence.*;
 

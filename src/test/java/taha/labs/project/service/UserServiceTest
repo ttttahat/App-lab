@@ -1,0 +1,65 @@
+package taha.labs.project.service;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import taha.labs.project.model.dto.User;
+import taha.labs.project.repository.UserRepository;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class UserServiceTest {
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @InjectMocks
+    private UserService userService;
+
+    @Test
+    void createUser_Success() {
+
+        when(userRepository.countByUsername("taha")).thenReturn(0L);
+        when(userRepository.countByEmail("taha@test.com")).thenReturn(0L);
+        when(passwordEncoder.encode("rawPass")).thenReturn("hashedPass");
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+
+
+        User savedUser = userService.createUser("taha", "taha@test.com", "rawPass");
+        assertThat(savedUser.getPassword()).isEqualTo("hashedPass");
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void createUser_ThrowsException_WhenEmailExists() {
+        when(userRepository.countByUsername("taha")).thenReturn(0L);
+        when(userRepository.countByEmail("taha@test.com")).thenReturn(1L);
+
+        assertThrows(IllegalArgumentException.class, () -> 
+            userService.createUser("taha", "taha@test.com", "pass")
+        );
+    }
+
+    @Test
+    void authenticate_ReturnsTrue_OnValidCredentials() {
+        User user = new User("taha", "taha@test.com", "hashedPass");
+        when(userRepository.findByEmail("taha@test.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("rawPass", "hashedPass")).thenReturn(true);
+
+        boolean result = userService.authenticate("taha@test.com", "rawPass");
+
+        assertThat(result).isTrue();
+    }
+}

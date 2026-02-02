@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Notes - Note App</title>
+    <style>
+        html, body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #2b2b2b; color: #f1f1f1; display: flex; flex-direction: column; align-items: center; padding: 40px; }
+        .container { width: 100%; max-width: 800px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        h1 { margin: 0; font-size: 1.8rem; }
+        .btn-new { text-decoration: none; background-color: #3d5afe; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+        .btn-new:hover { background-color: #536dfe; }
+        table { width: 100%; border-collapse: collapse; background-color: #333; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #444; }
+        th { background-color: #444; color: #aaa; text-transform: uppercase; font-size: 0.8rem; }
+        .actions a { color: #3d5afe; text-decoration: none; margin-right: 15px; font-weight: bold; }
+        .actions button { background: none; border: none; color: #ff6b6b; cursor: pointer; font-weight: bold; font-family: inherit; }
+        .nav-footer { margin-top: 30px; }
+        .nav-footer a { color: #aaa; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>My Notes</h1>
+        <a th:href="@{/notes/new}" class="btn-new">+ New Note</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="note : ${notes}">
+                <td th:text="${note.title}" style="font-weight: bold;"></td>
+                <td th:text="${note.content}"></td>
+                <td class="actions">
+                    <a th:href="@{|/notes/edit/${note.id}|}">Edit</a>
+                    <form th:action="@{|/notes/delete/${note.id}|}" method="post" style="display:inline">
+                        <button type="submit" onclick="return confirm('Delete this note?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="nav-footer">
+        <a th:href="@{/user/home}">← Back to Dashboard</a>
+    </div>
+</div>
+</body>
+</html>

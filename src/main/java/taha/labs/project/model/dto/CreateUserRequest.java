@@ -8,7 +8,7 @@ import taha.labs.project.validator.ValidUsername;
 public class CreateUserRequest {
 
     @NotBlank
-    @Size(min = 3, max = 20)
+    @Size(min = 3, max = 20,  message = "Username is minimum 3 characters and maximum 20 characters.")
     private String username;
 
     @NotBlank
@@ -16,7 +16,7 @@ public class CreateUserRequest {
     private String email;
 
     @NotBlank
-    @Size(min = 6)
+    @Size(min = 6, message = "Password is too short, please use at least 6 characters.")
     private String password;
 
     public CreateUserRequest() {}
