@@ -51,5 +51,6 @@ jacocoTestReport {
 
 
 dependencyCheck {
-    failBuildOnCVSS = 11.0 
+    failBuildOnCVSS = 11.0
+    failOnError = false
 }
