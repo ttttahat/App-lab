@@ -9,10 +9,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Configuration
 public class SecurityConfig { 
 //this class enforces route protection
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -30,11 +35,16 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/user/home", true)
                 .failureHandler((request, response, exception) -> {
                     String username = request.getParameter("username");
-                    org.slf4j.LoggerFactory.getLogger(SecurityConfig.class)
-                        .warn("Failed login attempt for username: {}", username);
+                    logger.warn("SECURITY ALERT: Failed login attempt for username: {}", username);
                     response.sendRedirect("/login?error");
                 })
                 .permitAll()
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    logger.warn("SECURITY ALERT: Unauthorized URL access attempt to {}", request.getRequestURI());
+                    response.sendRedirect("/login");
+                })
             )
             // logout configuration below handles session invalidation
             .logout(logout -> logout

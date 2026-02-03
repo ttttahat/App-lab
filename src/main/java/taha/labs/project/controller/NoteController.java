@@ -12,12 +12,15 @@ import taha.labs.project.service.NoteService;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/notes")
 public class NoteController {
 
     private final NoteService noteService;
+    private static final Logger logger = LoggerFactory.getLogger(NoteController.class);
 
     public NoteController(NoteService noteService) {
         this.noteService = noteService;
@@ -60,7 +63,12 @@ public class NoteController {
                                .stream()
                                .filter(n -> n.getId().equals(id))
                                .findFirst()
-                               .orElseThrow(() -> new RuntimeException("Note not found"));
+                               .orElse(null);
+
+        if (note == null) {
+            logger.warn("SECURITY ALERT: User {} attempted to access unauthorized Note ID: {}", principal.getName(), id);
+            return "redirect:/notes";
+        }
 
         NoteDto dto = new NoteDto();
         dto.setTitle(note.getTitle());

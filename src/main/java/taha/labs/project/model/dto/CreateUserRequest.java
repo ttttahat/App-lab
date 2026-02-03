@@ -7,16 +7,17 @@ import taha.labs.project.validator.ValidUsername;
 
 public class CreateUserRequest {
 
-    @NotBlank
-    @Size(min = 3, max = 20,  message = "Username is minimum 3 characters and maximum 20 characters.")
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
+    @ValidUsername
     private String username;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Email is required")
+    @Email(message = "Please provide a valid email address")
     private String email;
 
-    @NotBlank
-    @Size(min = 6, message = "Password is too short, please use at least 6 characters.")
+    @NotBlank(message = "Password is required")
+    @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
     public CreateUserRequest() {}
@@ -24,6 +25,7 @@ public class CreateUserRequest {
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -31,6 +33,7 @@ public class CreateUserRequest {
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -38,6 +41,7 @@ public class CreateUserRequest {
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }

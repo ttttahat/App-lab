@@ -4,6 +4,7 @@ import taha.labs.project.model.dto.CreateUserRequest;
 import taha.labs.project.service.UserService;
 
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication; 
 import org.springframework.security.core.context.SecurityContextHolder; 
 import org.springframework.stereotype.Controller;
@@ -39,9 +40,18 @@ public class UserController {
             @Valid @ModelAttribute("user") CreateUserRequest req,
             BindingResult result, 
             RedirectAttributes redirectAttrs,
-            Model model
+            Model model,
+            HttpServletResponse response
     ) {
+        if (userService.existsByUsername(req.getUsername())) {
+            result.rejectValue("username", "error.user", "Username already exists");
+        }
+        if (userService.existsByEmail(req.getEmail())) {
+            result.rejectValue("email", "error.user", "Email already exists");
+        }
+
         if (result.hasErrors()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "register";
         }
 
@@ -53,6 +63,7 @@ public class UserController {
             );
         } catch (IllegalArgumentException ex) {
             model.addAttribute("registrationError", ex.getMessage());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "register";
         }
 

@@ -6,7 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-//password hashing, BCrypt. no plain text password is stored.
+
+//password hashing, BCrypt. no plain text passwordis stored.
 @Service
 public class UserService {
 
@@ -20,12 +21,11 @@ public class UserService {
     }
 
     public User createUser(String username, String email, String password) {
-
-        if (userRepository.countByUsername(username) > 0) {
+        if (userRepository.countByUsernameIgnoreCase(username) > 0) {
             throw new IllegalArgumentException("Username already exists");
         }
 
-        if (userRepository.countByEmail(email) > 0) {
+        if (userRepository.countByEmailIgnoreCase(email) > 0) {
             throw new IllegalArgumentException("Email already exists");
         }
 
@@ -44,5 +44,13 @@ public class UserService {
 
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.countByUsernameIgnoreCase(username) > 0;
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.countByEmailIgnoreCase(email) > 0;
     }
 }

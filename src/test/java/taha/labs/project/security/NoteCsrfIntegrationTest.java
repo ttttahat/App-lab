@@ -12,6 +12,7 @@ import taha.labs.project.service.NoteService;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,6 +40,7 @@ class NoteCsrfIntegrationTest {
     void postWithoutCsrf_isRejected() throws Exception {
         mockMvc.perform(
                 post("/notes")
-        ).andExpect(status().isForbidden());
+        ).andExpect(status().is3xxRedirection())
+         .andExpect(redirectedUrl("/login"));
     }
 }
