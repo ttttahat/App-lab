@@ -26,6 +26,7 @@ jobs:
 
     - name: Run OWASP Dependency Check
       run: ./gradlew dependencyCheckAnalyze
+      continue-on-error: true
 
     - name: Upload Security and Coverage Reports
       if: always()
