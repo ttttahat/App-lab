@@ -20,6 +20,7 @@ repositories {
 }
 
 dependencies {
+    testImplementation 'com.h2database:h2'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-community-db-support:10.1.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
