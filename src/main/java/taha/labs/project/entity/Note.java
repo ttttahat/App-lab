@@ -3,7 +3,7 @@ package taha.labs.project.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
+// DTO validation annotations, and custom validation rules are here
 @Entity
 @Table(name = "notes")
 public class Note {
